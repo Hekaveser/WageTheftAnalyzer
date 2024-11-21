@@ -29,3 +29,7 @@ Data o inflaci pùjde asi nejsnadnìji získat z Eurostatu, a to zde:
 https://ec.europa.eu/eurostat/web/query-builder/tool
 
 dá se také získat míra inflace pro konkrétní oblast. Asi je vhodné toto cachovat mìsíc, pokud se ovšem podaøí získat inflaci mìsíènì.
+
+
+
+https://data-explorer.oecd.org/vis?lc=en&df[ds]=DisseminateArchiveDMZ&df[id]=DF_DP_LIVE&df[ag]=OECD&df[vs]=&av=true&pd=2022-01%2C2022-12&dq=CZE%2BOECD%2BOAVG.CPI...M&to[TIME_PERIOD]=false&vw=tb
