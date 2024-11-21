@@ -1,0 +1,6 @@
+@WageTheftAnalyzer_HostAddress = http://localhost:5145
+
+GET {{WageTheftAnalyzer_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
