@@ -2,27 +2,26 @@
 using WageTheftAnalyzer.Features.User;
 using WageTheftAnalyzer.Features.Wage;
 
-namespace WageTheftAnalyzer.Features
+namespace WageTheftAnalyzer.Features;
+
+public static class Features
 {
-    public static class Features
+    public static IServiceCollection AddFeatures(this WebApplicationBuilder builder)
     {
-        public static IServiceCollection AddFeatures(this WebApplicationBuilder builder)
-        {
-            return builder.Services
-                .AddWagesFeature()
-                .AddUsersFeature()
-                .AddInflationsFeature();
-        }
+        return builder.Services
+            .AddWagesFeature()
+            .AddUsersFeature()
+            .AddInflationsFeature();
+    }
 
-        public static IEndpointRouteBuilder MapFeatures(this IEndpointRouteBuilder endpoints)
-        {
-            var group = endpoints.MapGroup("/");
+    public static IEndpointRouteBuilder MapFeatures(this IEndpointRouteBuilder endpoints)
+    {
+        var group = endpoints.MapGroup("/");
 
-            group.MapWagesFeature();
-            group.MapUsersFeature();
-            group.MapInflationsFeature();
+        group.MapWagesFeature();
+        group.MapUsersFeature();
+        group.MapInflationsFeature();
 
-            return endpoints;
-        }
+        return endpoints;
     }
 }
