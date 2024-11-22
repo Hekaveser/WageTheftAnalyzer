@@ -11,6 +11,7 @@ public static partial class Wages
         public int Id { get; set; }
         public decimal Amount { get; set; }
         public Currency Currency { get; set; }
+        public string Country { get; set; }
         public DateTime Date { get; set; }
         public int UserId { get; set; }
         public User.Users.User User { get; set; }
@@ -58,5 +59,6 @@ public static partial class Wages
             .WithDisplayName(nameof(Wages));
 
         endpoints.MapAddWage();
+        endpoints.MapGetWages();
     }
 }

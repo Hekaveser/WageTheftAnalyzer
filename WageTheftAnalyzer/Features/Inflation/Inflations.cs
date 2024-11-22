@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using WageTheftAnalyzer.Features.User;
 using WageTheftAnalyzer.Options;
 
 namespace WageTheftAnalyzer.Features.Inflation;
@@ -13,8 +12,6 @@ public static partial class Inflations
         public decimal Percentage { get; set; }
         public DateTime Date { get; set; }
         public string Country { get; set; }
-        public int UserId { get; set; }
-        public Users.User User { get; set; }
     }
 
     public class InflationContext : DbContext
@@ -53,6 +50,6 @@ public static partial class Inflations
             .WithName(nameof(Inflation))
             .WithDisplayName(nameof(Inflation));
 
-        endpoints.MapRegisterUser();
+        //endpoints.mapad();
     }
 }
