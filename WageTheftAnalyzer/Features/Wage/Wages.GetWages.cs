@@ -1,5 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using WageTheftAnalyzer.Features.Inflation;
+using static WageTheftAnalyzer.Features.Inflation.Inflations;
 
 namespace WageTheftAnalyzer.Features.Wage;
 
@@ -32,32 +34,51 @@ public partial class Wages
 
         public class Handler : IRequestHandler<Query, Response>
         {
-            public Handler(IDbContextFactory<WageContext> dbContextFactory, IMediator mediator)
+            public Handler(WageContext wageContext, IMediator mediator)
             {
-                this.dbContextFactory = dbContextFactory;
+                this.wageContext = wageContext;
                 this.mediator = mediator;
             }
 
-            private readonly IDbContextFactory<WageContext> dbContextFactory;
+            private readonly WageContext wageContext;
             private readonly IMediator mediator;
 
             public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
             {
-                Wage[] wageInflations = [];
+                //todo - add fluent validation and validate inputs here
                 int userId = request.UserId;
-                using (WageContext wageContext = dbContextFactory.CreateDbContext())
+                Wage[] wageInflations = await (from wages in wageContext.Wages
+                                               where wages.UserId == userId &&
+                                               (wages.Date >= request.From && wages.Date <= request.To)
+                                               select wages).ToArrayAsync(cancellationToken);
+
+                Inflations.Query query = new(wageInflations
+                    .Select(w => new DateCountryPair(w.Date, w.Country))
+                    .ToArray());
+                Inflations.Response inflations = await mediator.Send(query, cancellationToken);
+
+                List<WageInflationDto> wageInflationDtoList = MergeInflationsWithWages(wageInflations, inflations);
+
+                WagesInflationsDto wagesInflationsDto = new(userId, [.. wageInflationDtoList]);
+                return new Response(wagesInflationsDto);
+            }
+
+            private static List<WageInflationDto> MergeInflationsWithWages(Wage[] wageInflations, Inflations.Response inflations)
+            {
+                List<WageInflationDto> wageInflationDtoList = [];
+                foreach (Wage wageInflation in wageInflations)
                 {
-                    wageInflations = await (from wages in wageContext.Wages
-                                            where wages.UserId == userId &&
-                                            (wages.Date >= request.From && wages.Date <= request.To)
-                                            select wages).ToArrayAsync(cancellationToken);
+                    InflationDto? inflation = inflations.Inflations
+                        .Where(i => i.Country == wageInflation.Country
+                        && (i.Date.Month == wageInflation.Date.Month && i.Date.Year == wageInflation.Date.Year))
+                        .FirstOrDefault();
+
+                    wageInflationDtoList.Add(new WageInflationDto(wageInflation.Amount,
+                        wageInflation.Date,
+                        wageInflation.Currency,
+                        inflation?.PercentageRate ?? 0));
                 }
-                //todo - slice for load inflation records from database in Inflation feature
-
-                throw new NotImplementedException();
-
-                //WagesInflationsDto wagesInflationsDto = new(userId, wageInflations);
-                //return new Response(wagesInflationsDto);
+                return wageInflationDtoList;
             }
         }
     }

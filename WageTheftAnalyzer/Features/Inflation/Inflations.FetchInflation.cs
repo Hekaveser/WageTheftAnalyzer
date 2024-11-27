@@ -33,10 +33,9 @@ public partial class Inflation
         {
             public Task<Response> Handle(Query request, CancellationToken cancellationToken)
             {
+                //todo - inflace se uloží do databáze, pokud v ní ještě není a bude tak sloužit jako cache.
                 throw new NotImplementedException();
             }
         }
-
-
     }
 }
