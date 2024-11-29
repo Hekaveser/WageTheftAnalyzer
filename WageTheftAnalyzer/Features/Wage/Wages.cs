@@ -12,7 +12,8 @@ public static partial class Wages
         public decimal Amount { get; set; }
         public Currency Currency { get; set; }
         public string Country { get; set; }
-        public DateTime Date { get; set; }
+        public DateTime From { get; set; }
+        public DateTime To { get; set; }
         public int UserId { get; set; }
         public User.Users.User User { get; set; }
     }

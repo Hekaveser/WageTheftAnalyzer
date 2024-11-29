@@ -5,29 +5,8 @@ public partial class Inflation
 {
     public partial class FetchInflation
     {
-        public class Query : IRequest<Response>
-        {
-            public Query(DateTime date, string country)
-            {
-                Date = date;
-                Country = country;
-            }
-            public DateTime Date { get; }
-            public string Country { get; }
-        }
-
-        public class Response
-        {
-            public Response(DateTime date, decimal inflationPercentage, string country)
-            {
-                Date = date;
-                InflationPercentage = inflationPercentage;
-                Country = country;
-            }
-            public decimal InflationPercentage { get; }
-            public DateTime Date { get; }
-            public string Country { get; }
-        }
+        public record Query(DateTime From, DateTime To, string Country) : IRequest<Response>;
+        public record Response(DateTime From, DateTime To, string Country, decimal Rate);
 
         public class Handler : IRequestHandler<Query, Response>
         {

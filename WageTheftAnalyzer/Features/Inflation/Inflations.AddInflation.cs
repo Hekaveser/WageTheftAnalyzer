@@ -6,17 +6,27 @@ public partial class Inflations
 {
     public partial class AddInflation
     {
-        public class Command : IRequest
-        {
-            public DateTime Date { get; set; }
-            public decimal PercentageRate { get; set; }
-        }
+        public record Command(DateTime From, DateTime To, string Country, decimal Rate) : IRequest;
 
         public class Handler : IRequestHandler<Command>
         {
-            public Task Handle(Command request, CancellationToken cancellationToken)
+            private readonly InflationContext inflationContext;
+            public Handler(InflationContext inflationContext)
             {
-                throw new NotImplementedException();
+                this.inflationContext = inflationContext;
+            }
+            public async Task Handle(Command request, CancellationToken cancellationToken)
+            {
+                Inflation inflation = new()
+                {
+                    From = request.From,
+                    To = request.To,
+                    Country = request.Country,
+                    Rate = request.Rate
+                };
+
+                await inflationContext.AddAsync(inflation, cancellationToken);
+                await inflationContext.SaveChangesAsync(cancellationToken);
             }
         }
 

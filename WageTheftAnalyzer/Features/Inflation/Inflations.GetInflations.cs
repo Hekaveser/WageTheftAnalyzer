@@ -5,14 +5,7 @@ namespace WageTheftAnalyzer.Features.Inflation;
 
 public partial class Inflations
 {
-    public class Query : IRequest<Response>
-    {
-        public Query(DateCountryPair[] dateCountryPairs)
-        {
-            DateCountryPairs = dateCountryPairs;
-        }
-        public IEnumerable<DateCountryPair> DateCountryPairs { get; }
-    }
+    public record Query(DateTime From, DateTime To, string Country) : IRequest<Response>;
 
     public record DateCountryPair(DateTime Date, string Country);
 
@@ -27,15 +20,17 @@ public partial class Inflations
 
     public class InflationDto
     {
-        public InflationDto(int id, DateTime date, string country, decimal percentageRate)
+        public InflationDto(int id, DateTime from, DateTime to, string country, decimal percentageRate)
         {
             Id = id;
-            Date = date;
+            From = from;
+            To = to;
             Country = country;
             PercentageRate = percentageRate;
         }
         public int Id { get; }
-        public DateTime Date { get; }
+        public DateTime From { get; }
+        public DateTime To { get; }
         public string Country { get; }
         public decimal PercentageRate { get; }
     }
@@ -49,15 +44,11 @@ public partial class Inflations
 
         private readonly InflationContext inflationContext;
 
-        public async Task<Response> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Response> Handle(Query query, CancellationToken cancellationToken)
         {
             InflationDto[] inflations = await (from inflation in inflationContext.Inflations
-                                               from pair in request.DateCountryPairs
-                                               where
-                                               pair.Country == inflation.Country &&
-                                               pair.Date.Year == inflation.Date.Year &&
-                                               pair.Date.Month == inflation.Date.Month
-                                               select new InflationDto(inflation.Id, inflation.Date, inflation.Country, inflation.Percentage))
+                                               where inflation.From >= query.From && inflation.To <= query.To
+                                               select new InflationDto(inflation.Id, inflation.From, inflation.To, inflation.Country, inflation.Rate))
                                                .ToArrayAsync(cancellationToken);
             return new Response(inflations);
         }

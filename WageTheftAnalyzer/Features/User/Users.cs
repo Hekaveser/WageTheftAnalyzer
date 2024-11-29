@@ -10,9 +10,20 @@ public static partial class Users
     public class User
     {
         public int Id { get; set; }
-        public string UserName { get; set; }
-        public string Email { get; set; }
-        public List<Wage.Wages.Wage> Wages { get; set; }
+        public string UserName { get; set; } = null!;
+        public string Email { get; set; } = null!;
+        public Settings Settings { get; set; } = null!;
+        public List<Wage.Wages.Wage>? Wages { get; set; }
+    }
+
+    public class Settings
+    {
+        public int Id { get; set; }
+        public string Theme { get; set; } = null!;
+        public string DefaultCountry { get; set; } = null!;
+        public bool NotificationsEnabled { get; set; }
+        public int UserId { get; set; }
+        public User User { get; set; } = null!;
     }
 
     public class UserContext : DbContext

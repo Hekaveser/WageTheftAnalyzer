@@ -9,8 +9,9 @@ public static partial class Inflations
     public class Inflation
     {
         public int Id { get; set; }
-        public decimal Percentage { get; set; }
-        public DateTime Date { get; set; }
+        public decimal Rate { get; set; }
+        public DateTime From { get; set; }
+        public DateTime To { get; set; }
         public string Country { get; set; }
     }
 
